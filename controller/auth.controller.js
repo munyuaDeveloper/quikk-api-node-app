@@ -1,4 +1,5 @@
-const UserModel = require('../schemas/user.model')
+const UserModel = require('../schemas/user.model');
+const WalletModel = require('../schemas/wallet.model')
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../utils/async");
 
@@ -6,14 +7,23 @@ const asyncHandler = require("../utils/async");
 // @route POST api/v1/auth/register
 // @access Public
 exports.register = asyncHandler(async (req, res, next) => {
-    const { first_name, last_name, email, password, role } = req.body;
+    const { first_name, last_name, email,phone_number, password, role } = req.body;
     const user = await UserModel.create({
         first_name,
         last_name,
         email,
         password,
+        phone_number,
         role
     });
+    if(user) {
+        const body = {
+            balance: 0,
+            phone_number: user?.phone_number,
+            user: user?._id
+        }
+        userWallet = await WalletModel.create(body)
+    }
 
     sendTokenResponse(user, 200, res);
 });
@@ -93,3 +103,27 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 
     sendTokenResponse(user, 200, res);
 });
+
+const sendTokenResponse = (user, statusCode, res) => {
+    // Create token
+    const token = user.getSignedJwtToken();
+
+    const options = {
+        expires: new Date(
+            Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true
+    };
+
+    if (process.env.NODE_ENV === 'Production') {
+        options.secure = true;
+    }
+
+    res
+        .status(statusCode)
+        .cookie('token', token, options)
+        .json({
+            success: true,
+            token
+        });
+};

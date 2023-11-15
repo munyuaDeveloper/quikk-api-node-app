@@ -31,6 +31,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
         success: true,
         data: user
     });
+
 });
 
 // @desc      Update user

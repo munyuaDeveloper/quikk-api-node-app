@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken')
@@ -13,7 +12,10 @@ const UserSchema = new mongoose.Schema({
         required: [true, 'Please add a last name']
     },
     phone_number: {
-        type: Number,
+        type: String,
+        unique: true,
+        minLength: 10,
+        maxLength: 10,
         required: [true, 'Please add a phone number']
     },
     email: {
@@ -24,11 +26,6 @@ const UserSchema = new mongoose.Schema({
             /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
             'Please add a valid email'
         ]
-    },
-    role: {
-        type: String,
-        enum: ['Staff', 'Admin'],
-        default: 'Staff'
     },
     password: {
         type: String,

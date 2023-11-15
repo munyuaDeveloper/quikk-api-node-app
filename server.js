@@ -24,6 +24,8 @@ connectDB();
 
 const auth = require('./routes/auth.route');
 const users = require('./routes/user.router');
+const wallet = require('./routes/wallet.route');
+const transactions = require('./routes/transactions.route');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -34,6 +36,8 @@ app.use(bodyParser.json())
 // Routes
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
+app.use('/api/v1/wallet', wallet);
+app.use('/api/v1/transactions', transactions)
 
 // Error handler
 app.use(errorHandler);

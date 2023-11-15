@@ -53,7 +53,7 @@ UserSchema.pre('save', async function (next) {
 // Sign JWT token
 UserSchema.methods.getSignedJwtToken = function () {
     // I added the user object in the token payload
-    return jsonwebtoken.sign({ id: this._id, user: { id: this._id, first_name: this.first_name, last_name: this.last_name, email: this.email, role: this.role } }, process.env.JWT_SECRET, {
+    return jsonwebtoken.sign({ id: this._id, user: { id: this._id, first_name: this.first_name, last_name: this.last_name, email: this.email, phone_number: this.phone_number } }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
     })
 }

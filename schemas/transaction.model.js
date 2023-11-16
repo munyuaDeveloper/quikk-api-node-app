@@ -6,20 +6,23 @@ const TransactionSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    type: {
+        type: String,
+        enum: ['topUp', 'send', 'receive'],
+        required: true
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    sender_wallet: {
+    sender: {
         type: Schema.Types.ObjectId,
-        ref: 'Wallet',
-        required: true,
+        ref: 'User',
     },
-    receiver_wallet: {
+    receiver: {
         type: Schema.Types.ObjectId,
-        ref: 'Wallet',
-        required: true,
+        ref: 'User',
     },
     createdAt: {
         type: Date,

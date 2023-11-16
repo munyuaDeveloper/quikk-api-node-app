@@ -25,9 +25,14 @@ exports.topUpWallet = asyncHandler(async (req, res, next) => {
     if (wallet) {
         updatedWallet = await WalletModal.findOneAndUpdate(
             { user: req.user._id },
-            { balance: wallet.balance + req.body.amount },
+            { balance: wallet.balance + +req.body.amount },
             { new: true })
     }
+    await TransactionModal.create(        {
+        amount: req.body.amount,
+        user: req.user._id,
+        type: 'topUp'
+    })
 
     res.status(200).json({
         success: true,
@@ -54,22 +59,31 @@ exports.sendMoney = asyncHandler(async (req, res, next) => {
     // debit the owner waller
     updatedOwnerWallet = await WalletModal.findOneAndUpdate(
         { user: req.user._id },
-        { balance: ownerWallet.balance - req.body.amount },
+        { balance: ownerWallet.balance - +req.body.amount },
         { new: true })
 
 
     // credit the receiver wallet
     await WalletModal.findOneAndUpdate(
         { phone_number: req.body.phone_number },
-        { balance: receiverWallet.balance + req.body.amount },
+        { balance: receiverWallet.balance + +req.body.amount },
         { new: true })
 
-    await TransactionModal.create({
-        amount: req.body.amount,
-        user: req.user._id,
-        sender_wallet: ownerWallet._id,
-        receiver_wallet: receiverWallet._id
-    })
+    const createTransactions  = [
+        {
+            amount: req.body.amount,
+            user: req.user._id,
+            receiver: receiverWallet.user,
+            type: 'send'
+        },
+        {
+            amount: req.body.amount,
+            user: receiverWallet.user,
+            sender: req.user._id,
+            type: 'receive'
+        }
+    ]
+    await TransactionModal.create(createTransactions)
 
     res.status(200).json({
         success: true,

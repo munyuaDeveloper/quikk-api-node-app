@@ -1,4 +1,4 @@
-
+const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../utils/async');
 const WalletModal = require('../schemas/wallet.model');
 const TransactionModal = require('../schemas/transaction.model');
@@ -49,11 +49,8 @@ exports.sendMoney = asyncHandler(async (req, res, next) => {
 
     let updatedOwnerWallet = null;
     if (!receiverWallet || !ownerWallet || ownerWallet.balance < req.body.amount) {
-        const message = !receiverWallet ? "The receiver wallet was not found!" : "The wallet doesn't have enough balance"
-        return res.status(400).json({
-            success: false,
-            data: message
-        });
+        const message = !receiverWallet ? "No user with that phone number was not found!" : "The wallet doesn't have enough balance"
+        return next(new ErrorResponse(message, 400));
     }
 
     // debit the owner waller
